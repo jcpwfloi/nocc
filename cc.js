@@ -4,9 +4,6 @@ const cheerio = require('cheerio');
 const querystring = require('querystring');
 const config = require('./config.json');
 
-async function courseState(course, avail) {
-  console.log(course, avail);
-}
 async function parseGrade(grades) {
   console.log(grades);
 }
@@ -18,6 +15,7 @@ async function ccRequest(url, opts) {
   $ = cheerio.load(SAMLRequest);
   SAMLRequest = $('input[name="SAMLRequest"]').attr('value');
   if (SAMLRequest == null) return answer;
+  console.log("SSO SAML Login Requested");
   body = await fetch("https://sso.unc.edu/idp/profile/SAML2/POST/SSO", {
     "headers": {
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -139,11 +137,12 @@ async function entry() {
   });
 }
 
-async function selectSemester(body) {
+async function selectSemester(body, termNum) {
+  var term = termNum || '2203';
   var pid = /EMPLID=\d+&/.exec(body);
   pid = pid[0];
   pid = pid.substr(7, 9);
-  return await fetch(`https://cs.cc.unc.edu/psc/campus/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?Page=SSR_SSENRL_CART&Action=A&ACAD_CAREER=UGRD&EMPLID=${pid}&INSTITUTION=UNCCH&STRM=2203`, {
+  return await fetch(`https://cs.cc.unc.edu/psc/campus/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?Page=SSR_SSENRL_CART&Action=A&ACAD_CAREER=UGRD&EMPLID=${pid}&INSTITUTION=UNCCH&STRM=${term}`, {
     "headers": {
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
       "accept-language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,ja;q=0.6,de-DE;q=0.5,de;q=0.4,zh-TW;q=0.3",
@@ -161,7 +160,7 @@ async function selectSemester(body) {
   });
 }
 
-async function check() {
+async function check(term) {
   await entry();
   var body = await
     ccRequest("https://cs.cc.unc.edu/psc/campus/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?Page=SSR_SSENRL_CART&Action=A&ExactKeys=Y", {
@@ -180,17 +179,22 @@ async function check() {
       "method": "GET",
       "mode": "cors"
     });
-  body = await selectSemester(body);
+  body = await selectSemester(body, term);
   body = await(body.text());
   var $ = cheerio.load(body);
+  var ans = [];
   $('table.PSLEVEL1GRID').first().find('tbody > tr').each(async function() {
     var course = $(this).find('a.PSHYPERLINK');
     var availability = $(this).find('img').eq(1);
     if (course.html() != null) {
       course = course.html().substr(0, 12);
-      await courseState(course, availability.attr('alt') == 'Open');
+      ans.push({
+        course,
+        availability: availability.attr('alt') == 'Open'
+      });
     }
   });
+  return ans;
 }
 
 async function getGrade() {
