@@ -4,14 +4,15 @@ ConnnectCarolina spider.
 # Getting started
 
 1. Create a file named `config.json`.
-2. Open ConnectCarolina and log in.
-3. In Chrome console, pick one request to cs.cc.unc.edu and copy your cookie.
-4. Paste cookie in `config.json` and format it like this:
+2. Edit `config.json` and fill in your username and password like this:
 
 ```
 {
-  "cookie": "paste-your-cookie-here"
+  "username": "your-onyen",
+  "password": "your-onyen-password"
 }
 ```
 
 Then, run `node grade` to get your grade or `node availability` to check which courses in your shopping cart are available.
+
+Note that `node grade` is not available at the moment.
