@@ -15,4 +15,9 @@ ConnnectCarolina spider.
 
 Then, run `node grade` to get your grade or `node availability` to check which courses in your shopping cart are available.
 
-Note that `node grade` is not available at the moment.
+# Get Grade
+
+Run `node grade` to get grades of all semesters.
+
+Run `node grade current` to get grades of curret semester.
+
