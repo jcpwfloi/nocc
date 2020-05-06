@@ -1,6 +1,7 @@
 const cc = require('./cc');
 
 async function main() {
+  await cc.entry();
   var avail = await cc.check();
   console.log('Summer 2020 Availability:');
   console.log(avail);

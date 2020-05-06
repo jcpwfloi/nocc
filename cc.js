@@ -185,7 +185,6 @@ async function getpid() {
 }
 
 async function check(term) {
-  await entry();
   var body = await
     ccRequest("https://cs.cc.unc.edu/psc/campus/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_CART.GBL?Page=SSR_SSENRL_CART&Action=A&ExactKeys=Y", {
       "headers": {
@@ -223,7 +222,6 @@ async function check(term) {
 
 async function getGrade(termNum) {
   var term = termNum || '2209';
-  await entry();
   var body = await
     ccRequest(`https://cs.cc.unc.edu/psc/campus/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_GRADE.GBL??Action=A&ExactKeys=Y&ACAD_CAREER=UGRD&EMPLID=${await getpid()}&INSTITUTION=UNCCH&STRM=${term}`, {
       "headers": {
@@ -253,5 +251,6 @@ async function getGrade(termNum) {
   });
 }
 
+exports.entry = entry;
 exports.getGrade = getGrade;
 exports.check = check;
