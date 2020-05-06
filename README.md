@@ -11,7 +11,7 @@ ConnnectCarolina spider.
 1. Create a file named `config.json`.
 2. Edit `config.json` and fill in your username and password like this:
 
-```
+```json
 {
   "username": "your-onyen",
   "password": "your-onyen-password"
@@ -28,6 +28,7 @@ Run `node grade current` to get grades of curret semester.
 
 ## License
 
+```
 MIT License
 
 Copyright (c) 2020 Zhongrui Chen
@@ -49,3 +50,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
