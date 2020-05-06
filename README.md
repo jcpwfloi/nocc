@@ -1,5 +1,6 @@
 # NoCC
 [![npm version](https://badge.fury.io/js/nocc.svg)](https://badge.fury.io/js/nocc)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=B9Z76CZ8ZKQUW&currency_code=USD&source=url)
 
 ## What's this?
 ConnnectCarolina spider.
