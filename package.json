@@ -12,6 +12,8 @@
     "cheerio": "^1.0.0-rc.3",
     "fetch-cookie": "^0.8.0",
     "he": "^1.2.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "tough-cookie": "^4.0.0",
+    "tough-cookie-file-store": "^2.0.1"
   }
 }

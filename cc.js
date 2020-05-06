@@ -1,9 +1,14 @@
-const nodeFetch = require('node-fetch')
-const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 const cheerio = require('cheerio');
 const querystring = require('querystring');
 const he = require('he');
 const config = require('./config.json');
+
+const { CookieJar, Cookie } = require('tough-cookie');
+const CookieFileStore = require('tough-cookie-file-store').FileCookieStore;
+const cookieJar = new CookieJar(new CookieFileStore('./cookie.json'));
+
+const nodeFetch = require('node-fetch');
+const fetch = require('fetch-cookie/node-fetch')(nodeFetch, cookieJar);
 
 async function ccRequest(url, opts) {
   var body = await fetch(url, opts);
@@ -54,7 +59,7 @@ async function ccRequest(url, opts) {
   return await body.text();
 }
 
-async function entry() {
+async function _entry() {
   var body = await
     fetch("https://pa.cc.unc.edu/psp/paprd/EMPLOYEE/EMPL/h/?tab=NC_REDIRECT&TargetPage=PortalHome", {
       "headers": {
@@ -132,6 +137,21 @@ async function entry() {
     "method": "POST",
     "mode": "cors"
   });
+  body = await body.text();
+  if (/You have exceeded maximum login attempts in 24/.test(body))
+    throw new Error("You have exceeded maximum login attempts in 24 hours");
+  if (/Clear the browser cache of the browser you are using,/.test(body))
+    throw new Error("Try rm cookie.json and re-run the program");
+}
+
+async function entry() {
+  try {
+    await _entry();
+    return true;
+  } catch (e) {
+    console.log(e);
+    process.exit();
+  }
 }
 
 async function selectSemester(body, termNum) {
@@ -251,3 +271,4 @@ async function getGrade(termNum) {
 exports.entry = entry;
 exports.getGrade = getGrade;
 exports.check = check;
+
