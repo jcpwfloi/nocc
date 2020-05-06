@@ -2,11 +2,8 @@ const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 const cheerio = require('cheerio');
 const querystring = require('querystring');
+const he = require('he');
 const config = require('./config.json');
-
-async function parseGrade(grades) {
-  console.log(grades);
-}
 
 async function ccRequest(url, opts) {
   var body = await fetch(url, opts);
@@ -237,6 +234,7 @@ async function getGrade(termNum) {
       "mode": "cors"
     });
   var $ = cheerio.load(body);
+  var ans = [];
   $('table.PSLEVEL1GRID').first().find('tbody > tr').each(async function() {
     var row = $(this).find('td');
     if (row.html() != null) {
@@ -244,11 +242,10 @@ async function getGrade(termNum) {
       var name = row.eq(1).find('span').html();
       var grade = row.eq(4).find('span').html();
       if (grade == '&#xA0;') grade = null;
-      await parseGrade({
-        number, name, grade
-      });
+      ans.push({ number, name: he.decode(name), grade })
     }
   });
+  return ans;
 }
 
 exports.entry = entry;
