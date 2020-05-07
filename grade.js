@@ -3,16 +3,15 @@ const semester = require('./semester.json')
 
 async function printGrade(sem) {
   console.log(`Your grade for ${sem}:`);
-  console.log(await cc.getGrade(semester[sem]));
+  console.log(await cc.grade(semester[sem]));
 }
 
 async function main() {
-  await cc.entry();
   if (process.argv[2]) {
     if (process.argv[2] === 'current') {
-      printGrade('current');
+      await printGrade('current');
     }
-    else printGrade(process.argv[2]);
+    else await printGrade(process.argv[2]);
     return;
   }
   for (var sem in semester) {

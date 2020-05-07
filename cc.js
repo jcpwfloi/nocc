@@ -5,10 +5,16 @@ const config = require('./config.json');
 
 const { CookieJar, Cookie } = require('tough-cookie');
 const CookieFileStore = require('tough-cookie-file-store').FileCookieStore;
-const cookieJar = new CookieJar(new CookieFileStore('./cookie.json'));
+var cookieJar = new CookieJar(new CookieFileStore('./cookie.json'));
 
 const nodeFetch = require('node-fetch');
-const fetch = require('fetch-cookie/node-fetch')(nodeFetch, cookieJar);
+var fetch = require('fetch-cookie/node-fetch')(nodeFetch, cookieJar);
+const fs = require('fs');
+
+function resetCookie() {
+  cookieJar = new CookieJar(new CookieFileStore('./cookie.json'));
+  fetch = require('fetch-cookie/node-fetch')(nodeFetch, cookieJar);
+}
 
 async function ccRequest(url, opts) {
   var body = await fetch(url, opts);
@@ -17,7 +23,6 @@ async function ccRequest(url, opts) {
   $ = cheerio.load(SAMLRequest);
   SAMLRequest = $('input[name="SAMLRequest"]').attr('value');
   if (SAMLRequest == null) return answer;
-  console.log("SSO SAML Login Requested");
   body = await fetch("https://sso.unc.edu/idp/profile/SAML2/POST/SSO", {
     "headers": {
       "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -60,6 +65,7 @@ async function ccRequest(url, opts) {
 }
 
 async function _entry() {
+  console.log("Logging in....");
   var body = await
     fetch("https://pa.cc.unc.edu/psp/paprd/EMPLOYEE/EMPL/h/?tab=NC_REDIRECT&TargetPage=PortalHome", {
       "headers": {
@@ -271,4 +277,30 @@ async function getGrade(termNum) {
 exports.entry = entry;
 exports.getGrade = getGrade;
 exports.check = check;
+
+exports.grade = async (t) => {
+  var ans;
+  try {
+    ans = await getGrade(t);
+  } catch(e) {
+    fs.unlinkSync('./cookie.json');
+    resetCookie();
+    await entry();
+    ans = await getGrade(t);
+  }
+  return ans;
+}
+
+exports.avail = async (t) => {
+  var ans;
+  try {
+    ans = await check(t);
+  } catch(e) {
+    fs.unlinkSync('./cookie.json');
+    resetCookie();
+    await entry();
+    ans = await check(t);
+  }
+  return ans;
+}
 
